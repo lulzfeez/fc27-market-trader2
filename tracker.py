@@ -8,11 +8,14 @@ import requests
 PLAYERS_FILE = "players.json"
 HISTORY_FILE = "prices.csv"
 
-API_BASE = "https://www.futbin.org/futbin/api/27"
+# FUTBIN uses different paths for player search and price lookup.
+SEARCH_API_BASE = "https://www.futbin.org/futbin/api"
+PRICE_API_BASE = "https://www.futbin.org/futbin/api/27"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
     "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
 
@@ -21,23 +24,20 @@ def load_players():
         return json.load(f)
 
 
-def api_get(endpoint, params=None):
-    url = f"{API_BASE}/{endpoint}"
-
+def api_get(url, params=None):
     response = requests.get(
         url,
         params=params or {},
         headers=HEADERS,
         timeout=30,
     )
-
     response.raise_for_status()
     return response.json()
 
 
 def find_player_id(player_name):
     data = api_get(
-        "searchPlayersByName",
+        f"{SEARCH_API_BASE}/searchPlayersByName",
         {
             "playername": player_name,
             "year": 27,
@@ -45,11 +45,11 @@ def find_player_id(player_name):
     )
 
     results = data.get("data", [])
-
-    if not results:
+    if not isinstance(results, list) or not results:
         return None
 
-    # Prefer an exact name match
+    # FUTBIN search can return multiple card versions.
+    # Prefer an exact name match, then the first result.
     for player in results:
         name = str(
             player.get("playername")
@@ -58,15 +58,17 @@ def find_player_id(player_name):
         ).strip()
 
         if name.lower() == player_name.lower():
-            return player.get("ID")
+            value = player.get("ID") or player.get("id")
+            if value:
+                return int(value)
 
-    # Otherwise use the first result
-    return results[0].get("ID")
+    value = results[0].get("ID") or results[0].get("id")
+    return int(value) if value else None
 
 
 def get_price(player_id, platform="PS"):
     data = api_get(
-        "fetchPriceInformation",
+        f"{PRICE_API_BASE}/fetchPriceInformation",
         {
             "playerresource": player_id,
             "platform": platform,
@@ -82,23 +84,16 @@ def get_price(player_id, platform="PS"):
 
 
 def main():
-
     players = load_players()
-
     timestamp = datetime.now(timezone.utc).isoformat()
-
     rows = []
 
     for player in players:
-
         name = player["name"]
 
         try:
-
-            # Use saved FUTBIN ID if available
             player_id = player.get("futbin_id")
 
-            # Otherwise find it
             if not player_id:
                 player_id = find_player_id(name)
 
@@ -114,6 +109,8 @@ def main():
 
             print(f"OK {name}: {price:,} coins")
 
+            player["futbin_id"] = player_id
+
             rows.append({
                 "timestamp_utc": timestamp,
                 "player": name,
@@ -122,30 +119,19 @@ def main():
                 "price": price,
             })
 
-            # Save ID so we don't need to search next time
-            player["futbin_id"] = player_id
-
         except Exception as e:
-
             print(f"ERROR {name}: {e}")
 
     if not rows:
         raise SystemExit("No prices were collected")
 
-    # Save player IDs
     with open(PLAYERS_FILE, "w", encoding="utf-8") as f:
         json.dump(players, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
     file_exists = os.path.exists(HISTORY_FILE)
 
-    with open(
-        HISTORY_FILE,
-        "a",
-        encoding="utf-8",
-        newline=""
-    ) as f:
-
+    with open(HISTORY_FILE, "a", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(
             f,
             fieldnames=[
