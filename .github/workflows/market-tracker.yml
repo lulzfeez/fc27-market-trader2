@@ -2,6 +2,11 @@ name: FC27 Market Tracker
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "tracker.py"
+      - "requirements.txt"
+      - ".github/workflows/market-tracker.yml"
   schedule:
     - cron: "17 */2 * * *"
 
