@@ -4,21 +4,24 @@ Automated FC 27 FUT market tracker and trading analysis.
 
 ## What it does
 - Tracks 20 FC 27 players.
-- Collects market prices on a two-hour GitHub Actions schedule.
-- Stores every snapshot in `prices.csv`.
-- Calculates 2h, 6h, 24h and 7d observed price changes.
-- Produces `signals.csv` and a readable `report.md`.
-- Can also be run manually with GitHub Actions.
+- Resolves player pages on FUTBIN when a URL is not already stored.
+- Collects PlayStation, Xbox and PC prices.
+- Runs automatically every 2 hours through GitHub Actions.
+- Stores historical snapshots in `prices.csv`.
+- Calculates change versus the previous snapshot.
+- Produces `signals.csv` and `report.md`.
+- Supports manual runs with GitHub Actions.
 
 ## Files
-- `players.csv` — watchlist.
-- `tracker.py` — collector and analysis engine.
-- `prices.csv` — historical snapshots.
-- `signals.csv` — latest movement metrics.
-- `report.md` — latest human-readable report.
-- `.github/workflows/market-tracker.yml` — automated schedule.
+- `players.json` — 20-player watchlist.
+- `tracker.py` — collection and analysis engine.
+- `prices.csv` — historical price database.
+- `signals.csv` — latest observed movement.
+- `report.md` — readable market report.
+- `.github/workflows/market-tracker.yml` — two-hour automation.
 
-## Important
-The tracker uses publicly accessible FUTBIN pages/data and is designed to tolerate page changes, but automated requests can be blocked or FUTBIN can change its page structure. Failed player lookups are logged rather than treated as valid prices.
+## Automation
+The workflow is scheduled at minute 17 of every even UTC hour and can also be started manually from the **Actions** tab.
 
-The movement score describes observed historical movement; it is not a forecast or a guarantee of future performance.
+## Notes
+FUTBIN can change page structure or restrict automated requests. The tracker logs failed players and will not treat missing prices as valid data. Historical movement is descriptive and is not a guarantee of future performance.
