@@ -1,14 +1,22 @@
 [
-  {
-    "name": "Jamal Musiala",
-    "url": "https://www.futbin.com/27/player/346/jamal-musiala"
-  },
-  {
-    "name": "Theo Hernández",
-    "url": "https://www.futbin.com/27/player/579/theo-hernandez"
-  },
-  {
-    "name": "Nico Schlotterbeck",
-    "url": "https://www.futbin.com/27/player/739/nico-schlotterbeck"
-  }
+  {"name":"Kylian Mbappe","url":""},
+  {"name":"Erling Haaland","url":""},
+  {"name":"Vinicius Junior","url":""},
+  {"name":"Lamine Yamal","url":""},
+  {"name":"Jude Bellingham","url":""},
+  {"name":"Bukayo Saka","url":""},
+  {"name":"Mohamed Salah","url":""},
+  {"name":"Harry Kane","url":""},
+  {"name":"Jamal Musiala","url":"https://www.futbin.com/27/player/346/jamal-musiala"},
+  {"name":"Theo Hernandez","url":"https://www.futbin.com/27/player/579/theo-hernandez"},
+  {"name":"Nico Schlotterbeck","url":"https://www.futbin.com/27/player/739/nico-schlotterbeck"},
+  {"name":"Cole Palmer","url":""},
+  {"name":"Pedri","url":""},
+  {"name":"Rodri","url":""},
+  {"name":"Federico Valverde","url":""},
+  {"name":"Achraf Hakimi","url":""},
+  {"name":"Alphonso Davies","url":""},
+  {"name":"Florian Wirtz","url":""},
+  {"name":"Alexander Isak","url":""},
+  {"name":"Khvicha Kvaratskhelia","url":""}
 ]
