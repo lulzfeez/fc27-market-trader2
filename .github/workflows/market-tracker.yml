@@ -1,0 +1,37 @@
+name: FC27 Market Tracker
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub Actions uses UTC. This runs every 2 hours.
+    - cron: "0 */2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  track-market:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Collect FUTBIN prices
+        run: python tracker.py
+
+      - name: Save price history
+        run: |
+          git config user.name "FC27 Market Tracker"
+          git config user.email "actions@users.noreply.github.com"
+          git add prices.csv
+          git diff --cached --quiet || git commit -m "Update FC27 market prices"
+          git push
