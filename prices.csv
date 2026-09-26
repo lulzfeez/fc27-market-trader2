@@ -1,1 +1,1 @@
-timestamp,player,price
+timestamp_utc,player,futbin_id,platform,price,previous_price,change_coins,change_percent
